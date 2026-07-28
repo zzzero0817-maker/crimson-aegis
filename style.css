@@ -1,0 +1,251 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #05070b;
+  color: #ffffff;
+  font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+
+#gameWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 70%, rgba(120, 0, 30, 0.25), transparent 38%),
+    linear-gradient(#050914, #08050a 70%, #16050a);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hudBox {
+  min-width: 90px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 55, 90, 0.45);
+  background: rgba(8, 8, 16, 0.72);
+  box-shadow: 0 0 18px rgba(255, 0, 50, 0.12);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #ff8098;
+  margin-bottom: 4px;
+}
+
+#hpBar {
+  width: 120px;
+  max-width: 28vw;
+  height: 10px;
+  border: 1px solid #7d2438;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #220b12;
+}
+
+#hpFill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff183f, #ff6b81);
+  transition: width 0.18s;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(2, 3, 7, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.hidden {
+  display: none;
+}
+
+.panel {
+  width: min(88vw, 520px);
+  padding: 36px 28px;
+  text-align: center;
+  border: 1px solid rgba(255, 40, 80, 0.55);
+  background: linear-gradient(180deg, rgba(25, 8, 15, 0.96), rgba(8, 8, 14, 0.96));
+  border-radius: 16px;
+  box-shadow: 0 0 50px rgba(255, 0, 50, 0.22);
+}
+
+h1, h2 {
+  margin: 0 0 12px;
+  color: #ff385e;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 18px rgba(255, 40, 80, 0.45);
+}
+
+.panel p {
+  color: #d8d8e0;
+}
+
+button {
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+#startBtn, #retryBtn {
+  margin-top: 16px;
+  padding: 15px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff1f49, #8e001d);
+  box-shadow: 0 0 22px rgba(255, 31, 73, 0.35);
+}
+
+.help {
+  margin-top: 22px;
+  font-size: 12px;
+  opacity: 0.78;
+  line-height: 1.7;
+}
+
+#touchControls {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 190px;
+  z-index: 10;
+  display: none;
+  pointer-events: none;
+}
+
+#stickArea {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 150px;
+  height: 150px;
+  pointer-events: auto;
+}
+
+#stickBase {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 70, 105, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#stickKnob {
+  position: absolute;
+  left: 35px;
+  top: 35px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 55, 90, 0.72);
+  box-shadow: 0 0 20px rgba(255, 55, 90, 0.45);
+}
+
+#fireBtn {
+  position: absolute;
+  right: 24px;
+  bottom: 36px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  pointer-events: auto;
+  background: radial-gradient(circle at 35% 30%, #ff7b92, #b00027 55%, #510012);
+  box-shadow: 0 0 30px rgba(255, 30, 70, 0.45);
+}
+
+#fireBtn:active {
+  transform: scale(0.94);
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  #touchControls {
+    display: block;
+  }
+}
+
+
+/* iPhone 12 optimization */
+html, body {
+  height: 100dvh;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+#gameWrap {
+  min-height: 100dvh;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+#rotateNotice {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(3, 4, 8, 0.96);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotateNotice { display: flex; }
+}
+
+@media (max-height: 500px) {
+  #hud { top: 6px; left: 8px; right: 8px; }
+  .hudBox { padding: 5px 8px; min-width: 72px; }
+  .label { font-size: 9px; margin-bottom: 2px; }
+  #touchControls { height: 145px; }
+  #stickArea { width: 130px; height: 130px; left: 6px; bottom: 3px; }
+  #stickBase { width: 104px; height: 104px; left: 13px; top: 13px; }
+  #stickKnob { width: 44px; height: 44px; left: 30px; top: 30px; }
+  #fireBtn { width: 78px; height: 78px; right: 18px; bottom: 20px; }
+  .panel { padding: 22px 24px; }
+  .help { margin-top: 12px; line-height: 1.35; }
+}
+
+button, #stickArea {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.version{font-size:9px;letter-spacing:.25em;color:#ff7890;margin-bottom:8px}.settingsRow{display:flex;justify-content:center;gap:8px;margin-top:12px}.subBtn{padding:8px 10px;border:1px solid rgba(255,90,115,.35);border-radius:8px;background:rgba(255,255,255,.05);font-size:10px}.hudBox{min-width:68px}@media(max-height:430px){.settingsRow{margin-top:6px}.subBtn{padding:6px 8px}}
