@@ -1,65 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#14070b" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="CRIMSON AEGIS" />
-  <title>CRIMSON AEGIS Ver.2.0</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <title>Project Aegis</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="gameWrap">
-    <canvas id="gameCanvas"></canvas>
-
-    <div id="hud">
-      <div class="hudBox">
-        <span class="label">SCORE</span>
-        <span id="score">0</span>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PROJECT AEGIS</p>
+        <h1>投資監視ダッシュボード</h1>
       </div>
-      <div class="hudBox hpBox">
-        <span class="label">HP</span>
-        <div id="hpBar"><div id="hpFill"></div></div>
-      </div>
-      <div class="hudBox"><span class="label">WAVE</span><span id="wave">1</span></div>
-      <div class="hudBox"><span class="label">BEST</span><span id="bestScore">0</span></div>
-    </div>
+      <div class="status-pill"><span class="dot"></span>監視中</div>
+    </header>
 
-    <div id="startScreen" class="overlay">
-      <div class="panel">
-        <div class="version">PROJECT AEGIS / VER.2.0</div><h1>CRIMSON AEGIS</h1>
-        <p>真紅のドローンで敵機を迎撃せよ</p>
-        <button id="startBtn">MISSION START</button>
-        <div class="settingsRow"><button id="soundBtn" class="subBtn">SOUND：ON</button><button id="resetBestBtn" class="subBtn">BEST RESET</button></div>
-        <div class="help">
-          <p>iPhoneは横向き推奨</p>
-          <p>左下スティック：移動　右下FIRE：射撃</p>
+    <main>
+      <section class="hero-grid">
+        <article class="card hero-card">
+          <div class="card-head"><span>保有資産</span><span class="muted">デモデータ</span></div>
+          <div class="asset-value" id="assetValue">¥0</div>
+          <div class="asset-sub" id="assetProfit">評価損益 ¥0</div>
+          <div class="mini-stats">
+            <div><span>保有銘柄</span><strong>3</strong></div>
+            <div><span>重点監視</span><strong>7</strong></div>
+            <div><span>買いシグナル</span><strong id="buyCount">0</strong></div>
+          </div>
+        </article>
+
+        <article class="card signal-card">
+          <div class="card-head"><span>本日のAI判断</span><span id="clock" class="muted"></span></div>
+          <div class="signal-main">
+            <div class="signal-ring buy" id="mainSignal">買い</div>
+            <div>
+              <h2 id="signalTitle">ACSLを重点監視</h2>
+              <p id="signalReason">出来高と短期トレンドを確認してください。</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card section-card">
+        <div class="section-title-row">
+          <div><p class="eyebrow">PORTFOLIO</p><h2>保有銘柄管理</h2></div>
+          <button class="ghost-button" id="refreshButton">再計算</button>
         </div>
-      </div>
-    </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>銘柄</th><th>現在値</th><th>取得価格</th><th>株数</th><th>損益</th><th>AI</th></tr></thead>
+            <tbody id="portfolioBody"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <div id="rotateNotice">
-      <div>iPhoneを横向きにしてください</div>
-    </div>
+      <section class="two-col">
+        <article class="card section-card acsl-card">
+          <div class="section-title-row">
+            <div><p class="eyebrow">6232 / ACSL</p><h2>ACSL専用監視</h2></div>
+            <span class="badge warning">重点監視</span>
+          </div>
+          <div class="acsl-price-row">
+            <div><span>現在値</span><strong id="acslPrice">¥0</strong></div>
+            <div><span>取得価格</span><strong>¥1,885</strong></div>
+            <div><span>損益率</span><strong id="acslRate">0%</strong></div>
+          </div>
+          <div class="meter"><div id="acslMeter"></div></div>
+          <div class="levels">
+            <div><span>警戒ライン</span><strong>¥1,700</strong></div>
+            <div><span>取得価格</span><strong>¥1,885</strong></div>
+            <div><span>利確目標</span><strong>¥2,250</strong></div>
+          </div>
+          <div class="checklist">
+            <label><input type="checkbox" checked> 防衛・無人機ニュース</label>
+            <label><input type="checkbox" checked> 出来高急増</label>
+            <label><input type="checkbox" checked> 決算・増資情報</label>
+          </div>
+        </article>
 
-    <div id="gameOverScreen" class="overlay hidden">
-      <div class="panel">
-        <h2>MISSION FAILED</h2>
-        <p>最終スコア：<span id="finalScore">0</span></p><p>最高スコア：<span id="finalBest">0</span></p>
-        <button id="retryBtn">RETRY</button>
-      </div>
-    </div>
+        <article class="card section-card">
+          <div class="section-title-row">
+            <div><p class="eyebrow">CHART</p><h2>価格チャート</h2></div>
+            <select id="chartSelect">
+              <option value="ACSL">ACSL</option>
+              <option value="GIFTY">ギフティグループ</option>
+              <option value="CAICA">カイカデジタル</option>
+            </select>
+          </div>
+          <canvas id="priceChart" width="800" height="360" aria-label="価格チャート"></canvas>
+          <div class="chart-legend"><span><i class="legend-line"></i>株価</span><span><i class="legend-dash"></i>取得価格</span></div>
+        </article>
+      </section>
 
-    <div id="touchControls">
-      <div id="stickArea">
-        <div id="stickBase"><div id="stickKnob"></div></div>
-      </div>
-      <button id="fireBtn">FIRE</button>
-    </div>
+      <section class="two-col">
+        <article class="card section-card">
+          <div class="section-title-row"><div><p class="eyebrow">AI SIGNAL</p><h2>売買シグナル</h2></div></div>
+          <div id="signalList" class="signal-list"></div>
+        </article>
+
+        <article class="card section-card">
+          <div class="section-title-row"><div><p class="eyebrow">SPACE & DEFENSE</p><h2>宇宙・防衛ニュース</h2></div></div>
+          <div class="news-list">
+            <article><span class="news-tag positive">プラス</span><div><h3>国内無人機市場への期待継続</h3><p>防衛・災害対応用途の拡大を想定した監視項目。</p></div></article>
+            <article><span class="news-tag neutral">中立</span><div><h3>衛星関連銘柄の値動き確認</h3><p>テーマ先行による過熱と業績寄与を分けて判断。</p></div></article>
+            <article><span class="news-tag caution">注意</span><div><h3>増資・新株予約権リスク</h3><p>希薄化情報が出た場合はシグナルを即時再評価。</p></div></article>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active">ホーム</button><button>銘柄</button><button>AI</button><button>ニュース</button><button>資産</button>
+    </nav>
   </div>
-
-  <script src="game.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
