@@ -3,118 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#08111f" />
-  <title>Project Aegis</title>
+  <meta name="theme-color" content="#071426" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Aegis" />
+  <title>Project Aegis Ver.2</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">PROJECT AEGIS</p>
-        <h1>投資監視ダッシュボード</h1>
-      </div>
-      <div class="status-pill"><span class="dot"></span>監視中</div>
-    </header>
+<div class="app-shell">
+<header class="topbar">
+  <div><p class="eyebrow">PROJECT AEGIS VER.2</p><h1>投資監視ダッシュボード</h1></div>
+  <button class="live-pill" id="statusButton"><span></span>監視中</button>
+</header>
+<div class="notice">現在値・ニュースは自動取得ではありません。価格は「資産」画面で更新し、AI判定は入力値を基に端末内で再計算します。</div>
+<main>
+<section id="home" class="page active">
+  <article class="card hero-card">
+    <div class="card-head"><span>保有資産</span><span id="updatedAt" class="muted">未更新</span></div>
+    <div class="asset-value" id="assetValue">¥0</div>
+    <div class="asset-sub" id="assetProfit">評価損益 ¥0</div>
+    <div class="mini-stats"><div><span>保有銘柄</span><strong id="holdingCount">0</strong></div><div><span>重点監視</span><strong>7</strong></div><div><span>買い判定</span><strong id="buyCount">0</strong></div></div>
+  </article>
+  <article class="card signal-card">
+    <div class="card-head"><span>本日の総合判断</span><span id="clock" class="muted"></span></div>
+    <div class="signal-main"><div class="signal-ring" id="mainSignal">中立</div><div><h2 id="signalTitle">データを確認中</h2><p id="signalReason">価格とテクニカル指標から判定します。</p></div></div>
+  </article>
+  <article class="card section-card">
+    <div class="section-title-row"><div><p class="eyebrow">PORTFOLIO</p><h2>保有銘柄サマリー</h2></div><button class="ghost-button" data-page="assets">編集</button></div>
+    <div id="portfolioCards" class="portfolio-cards"></div>
+  </article>
+  <article class="card section-card acsl-focus">
+    <div class="section-title-row"><div><p class="eyebrow">6232 / ACSL</p><h2>ACSL重点監視</h2></div><span id="acslBadge" class="badge">判定中</span></div>
+    <div class="metric-grid"><div><span>現在値</span><strong id="acslPrice">¥0</strong></div><div><span>取得価格</span><strong>¥1,885</strong></div><div><span>評価損益</span><strong id="acslProfit">¥0</strong></div><div><span>RSI</span><strong id="acslRsi">--</strong></div></div>
+    <div class="range"><div id="acslMarker"></div></div><div class="range-labels"><span>警戒 1,700</span><span>取得 1,885</span><span>目標 2,250</span></div>
+    <button class="primary-button wide" data-page="acsl">ACSL詳細を見る</button>
+  </article>
+</section>
 
-    <main>
-      <section class="hero-grid">
-        <article class="card hero-card">
-          <div class="card-head"><span>保有資産</span><span class="muted">デモデータ</span></div>
-          <div class="asset-value" id="assetValue">¥0</div>
-          <div class="asset-sub" id="assetProfit">評価損益 ¥0</div>
-          <div class="mini-stats">
-            <div><span>保有銘柄</span><strong>3</strong></div>
-            <div><span>重点監視</span><strong>7</strong></div>
-            <div><span>買いシグナル</span><strong id="buyCount">0</strong></div>
-          </div>
-        </article>
+<section id="stocks" class="page">
+  <div class="page-title"><p class="eyebrow">WATCHLIST</p><h2>銘柄監視</h2></div>
+  <article class="card section-card"><div class="section-title-row"><h3>保有銘柄</h3><button class="ghost-button" id="recalcButton">AI再判定</button></div><div class="table-wrap"><table><thead><tr><th>銘柄</th><th>現在値</th><th>騰落</th><th>AI</th></tr></thead><tbody id="portfolioBody"></tbody></table></div></article>
+  <article class="card section-card"><h3>重点監視銘柄</h3><div id="watchList" class="signal-list"></div></article>
+</section>
 
-        <article class="card signal-card">
-          <div class="card-head"><span>本日のAI判断</span><span id="clock" class="muted"></span></div>
-          <div class="signal-main">
-            <div class="signal-ring buy" id="mainSignal">買い</div>
-            <div>
-              <h2 id="signalTitle">ACSLを重点監視</h2>
-              <p id="signalReason">出来高と短期トレンドを確認してください。</p>
-            </div>
-          </div>
-        </article>
-      </section>
+<section id="ai" class="page">
+  <div class="page-title"><p class="eyebrow">AI SIGNAL ENGINE</p><h2>AI売買シグナル</h2></div>
+  <article class="card section-card"><h3>判定ロジック</h3><p class="body-copy">価格と取得価格の乖離、7日トレンド、RSI、出来高倍率を点数化し、強い買い・買い・中立・売り・強い売りに分類します。投資判断を保証するものではありません。</p></article>
+  <div id="aiCards" class="ai-cards"></div>
+</section>
 
-      <section class="card section-card">
-        <div class="section-title-row">
-          <div><p class="eyebrow">PORTFOLIO</p><h2>保有銘柄管理</h2></div>
-          <button class="ghost-button" id="refreshButton">再計算</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>銘柄</th><th>現在値</th><th>取得価格</th><th>株数</th><th>損益</th><th>AI</th></tr></thead>
-            <tbody id="portfolioBody"></tbody>
-          </table>
-        </div>
-      </section>
+<section id="acsl" class="page">
+  <div class="page-title"><p class="eyebrow">ACSL COMMAND CENTER</p><h2>ACSL専用分析</h2></div>
+  <article class="card section-card"><div class="section-title-row"><div><h3>6232 ACSL</h3><p class="muted">取得価格 ¥1,885 / 100株</p></div><span id="acslDetailSignal" class="badge"></span></div><div class="metric-grid"><div><span>現在値</span><strong id="acslDetailPrice"></strong></div><div><span>損益率</span><strong id="acslDetailRate"></strong></div><div><span>RSI</span><strong id="acslDetailRsi"></strong></div><div><span>出来高倍率</span><strong id="acslVolume"></strong></div></div></article>
+  <article class="card section-card"><div class="section-title-row"><h3>7日チャート</h3><button class="ghost-button" id="openTradingView">外部チャート</button></div><canvas id="priceChart"></canvas><div class="chart-legend"><span><i></i>価格</span><span><i class="dash"></i>取得価格</span></div></article>
+  <article class="card section-card"><h3>監視チェック</h3><div class="checklist"><label><input type="checkbox" checked> 出来高急増</label><label><input type="checkbox" checked> 防衛・無人機受注</label><label><input type="checkbox" checked> 決算・業績修正</label><label><input type="checkbox" checked> 増資・新株予約権</label><label><input type="checkbox" checked> 大株主・信用需給</label></div></article>
+</section>
 
-      <section class="two-col">
-        <article class="card section-card acsl-card">
-          <div class="section-title-row">
-            <div><p class="eyebrow">6232 / ACSL</p><h2>ACSL専用監視</h2></div>
-            <span class="badge warning">重点監視</span>
-          </div>
-          <div class="acsl-price-row">
-            <div><span>現在値</span><strong id="acslPrice">¥0</strong></div>
-            <div><span>取得価格</span><strong>¥1,885</strong></div>
-            <div><span>損益率</span><strong id="acslRate">0%</strong></div>
-          </div>
-          <div class="meter"><div id="acslMeter"></div></div>
-          <div class="levels">
-            <div><span>警戒ライン</span><strong>¥1,700</strong></div>
-            <div><span>取得価格</span><strong>¥1,885</strong></div>
-            <div><span>利確目標</span><strong>¥2,250</strong></div>
-          </div>
-          <div class="checklist">
-            <label><input type="checkbox" checked> 防衛・無人機ニュース</label>
-            <label><input type="checkbox" checked> 出来高急増</label>
-            <label><input type="checkbox" checked> 決算・増資情報</label>
-          </div>
-        </article>
+<section id="news" class="page">
+  <div class="page-title"><p class="eyebrow">SPACE & DEFENSE</p><h2>宇宙・防衛ニュース</h2></div>
+  <article class="card section-card"><p class="body-copy">各ボタンから最新情報を検索します。記事内容は公開元で確認してください。</p><div class="news-actions"><a target="_blank" rel="noopener" href="https://www.google.com/search?q=ACSL+ドローン+最新ニュース">ACSL最新ニュース</a><a target="_blank" rel="noopener" href="https://www.google.com/search?q=防衛省+無人機+最新">防衛省・無人機</a><a target="_blank" rel="noopener" href="https://www.google.com/search?q=JAXA+衛星+最新ニュース">JAXA・衛星</a><a target="_blank" rel="noopener" href="https://www.google.com/search?q=日本+宇宙関連銘柄+ニュース">宇宙関連銘柄</a></div></article>
+  <article class="card section-card"><h3>材料評価メモ</h3><div class="news-list"><article><span class="news-tag positive">プラス</span><div><h3>受注・採択・量産</h3><p>売上寄与時期と金額が明示されているかを確認。</p></div></article><article><span class="news-tag neutral">中立</span><div><h3>実証・提携・展示</h3><p>将来性はあるが、業績への直接寄与は別途確認。</p></div></article><article><span class="news-tag caution">注意</span><div><h3>資金調達・希薄化</h3><p>調達目的、発行条件、潜在株式数を確認。</p></div></article></div></article>
+</section>
 
-        <article class="card section-card">
-          <div class="section-title-row">
-            <div><p class="eyebrow">CHART</p><h2>価格チャート</h2></div>
-            <select id="chartSelect">
-              <option value="ACSL">ACSL</option>
-              <option value="GIFTY">ギフティグループ</option>
-              <option value="CAICA">カイカデジタル</option>
-            </select>
-          </div>
-          <canvas id="priceChart" width="800" height="360" aria-label="価格チャート"></canvas>
-          <div class="chart-legend"><span><i class="legend-line"></i>株価</span><span><i class="legend-dash"></i>取得価格</span></div>
-        </article>
-      </section>
-
-      <section class="two-col">
-        <article class="card section-card">
-          <div class="section-title-row"><div><p class="eyebrow">AI SIGNAL</p><h2>売買シグナル</h2></div></div>
-          <div id="signalList" class="signal-list"></div>
-        </article>
-
-        <article class="card section-card">
-          <div class="section-title-row"><div><p class="eyebrow">SPACE & DEFENSE</p><h2>宇宙・防衛ニュース</h2></div></div>
-          <div class="news-list">
-            <article><span class="news-tag positive">プラス</span><div><h3>国内無人機市場への期待継続</h3><p>防衛・災害対応用途の拡大を想定した監視項目。</p></div></article>
-            <article><span class="news-tag neutral">中立</span><div><h3>衛星関連銘柄の値動き確認</h3><p>テーマ先行による過熱と業績寄与を分けて判断。</p></div></article>
-            <article><span class="news-tag caution">注意</span><div><h3>増資・新株予約権リスク</h3><p>希薄化情報が出た場合はシグナルを即時再評価。</p></div></article>
-          </div>
-        </article>
-      </section>
-    </main>
-
-    <nav class="bottom-nav">
-      <button class="active">ホーム</button><button>銘柄</button><button>AI</button><button>ニュース</button><button>資産</button>
-    </nav>
-  </div>
-  <script src="app.js"></script>
-</body>
-</html>
+<section id="assets" class="page">
+  <div class="page-title"><p class="eyebrow">ASSET CONTROL</p><h2>保有銘柄管理</h2></div>
+  <article class="card section-card"><p class="body-copy">現在値・取得価格・株数・7日価格・RSI・出来高倍率を入力し、「保存して再計算」を押してください。入力内容はこの端末に保存されます。</p><div id="assetForms"></div><button class="primary-button wide" id="saveAssets">保存して再計算</button><button class="danger-button wide" id="resetData">初期値に戻す</button></article>
+</section>
+</main>
+<nav class="bottom-nav"><button class="active" data-page="home">ホーム</button><button data-page="stocks">銘柄</button><button data-page="ai">AI</button><button data-page="news">ニュース</button><button data-page="assets">資産</button></nav>
+</div>
+<script src="app.js"></script>
+</body></html>
