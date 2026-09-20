@@ -223,7 +223,7 @@ function render() {
   setText('buyCount', buyCount);
   setText('updatedAt', '端末保存データ・米ドル表示');
 
-  renderFeatured();
+  
   renderMainSignal();
   renderWatch();
   renderForms();
@@ -250,44 +250,6 @@ function renderMainSignal() {
   setText('signalReason', `7日トレンド ${top.s.trend.toFixed(1)}%、RSI ${Number(top.p.rsi) || 50}、出来高 ${(Number(top.p.volume) || 1).toFixed(2)}倍。`);
 }
 
-function renderFeatured() {
-  const p = state.holdings.find((holding) => holding.code === 'FPS') || state.holdings[0];
-  if (!p) return;
-
-  const s = signal(p);
-  const price = Number(p.price) || 0;
-  const buy = Number(p.buy) || 0;
-  const shares = Number(p.shares) || 0;
-  const profit = (price - buy) * shares;
-  const rate = buy > 0 ? (price / buy - 1) * 100 : 0;
-
-  ['acslPrice', 'acslDetailPrice'].forEach((id) => setText(id, usd(price)));
-  setText('acslProfit', usd(profit));
-  const profitElement = document.getElementById('acslProfit');
-  if (profitElement) profitElement.className = profit >= 0 ? 'positive' : 'negative';
-  setText('acslRsi', Number(p.rsi) || 50);
-  setText('acslDetailRsi', Number(p.rsi) || 50);
-  setText('acslDetailRate', `${rate.toFixed(1)}%`);
-  const rateElement = document.getElementById('acslDetailRate');
-  if (rateElement) rateElement.className = rate >= 0 ? 'positive' : 'negative';
-  setText('acslVolume', `${(Number(p.volume) || 1).toFixed(2)}倍`);
-
-  ['acslBadge', 'acslDetailSignal'].forEach((id) => {
-    const element = document.getElementById(id);
-    if (!element) return;
-    element.textContent = s.label;
-    element.className = `badge ${s.cls}`;
-  });
-
-  const marker = document.getElementById('acslMarker');
-  if (marker) {
-    const min = buy > 0 ? buy * 0.7 : price * 0.7;
-    const max = buy > 0 ? buy * 1.5 : price * 1.5;
-    marker.style.left = `${Math.max(0, Math.min(100, (price - min) / (max - min) * 100))}%`;
-  }
-
-  drawChart(p);
-}
 
 function renderWatch() {
   const element = document.getElementById('watchList');
@@ -366,65 +328,7 @@ function renderForms() {
   }
 }
 
-function drawChart(p) {
-  const canvas = document.getElementById('priceChart');
-  if (!canvas || !p) return;
-  const ctx = canvas.getContext('2d');
-  const data = safeHistory(p);
-  const buy = Number(p.buy) || Number(p.price) || 0;
-  const ratio = devicePixelRatio || 1;
-  const width = canvas.clientWidth || 600;
-  const height = 280;
-  canvas.width = width * ratio;
-  canvas.height = height * ratio;
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-  ctx.clearRect(0, 0, width, height);
 
-  const pad = 34;
-  let min = Math.min(...data, buy);
-  let max = Math.max(...data, buy);
-  if (min === max) {
-    min *= 0.97;
-    max *= 1.03;
-    if (min === max) max = min + 1;
-  } else {
-    min *= 0.97;
-    max *= 1.03;
-  }
-
-  for (let i = 0; i < 5; i += 1) {
-    const y = pad + (height - pad * 2) * i / 4;
-    ctx.strokeStyle = 'rgba(143,167,189,.18)';
-    ctx.beginPath();
-    ctx.moveTo(pad, y);
-    ctx.lineTo(width - pad, y);
-    ctx.stroke();
-  }
-
-  const xy = (value, index) => [
-    pad + (width - pad * 2) * index / Math.max(1, data.length - 1),
-    height - pad - (value - min) / (max - min) * (height - pad * 2)
-  ];
-
-  ctx.strokeStyle = '#38d5ff';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  data.forEach((value, index) => {
-    const [x, y] = xy(value, index);
-    if (index) ctx.lineTo(x, y);
-    else ctx.moveTo(x, y);
-  });
-  ctx.stroke();
-
-  const buyY = xy(buy, 0)[1];
-  ctx.strokeStyle = '#f1c46c';
-  ctx.setLineDash([7, 6]);
-  ctx.beginPath();
-  ctx.moveTo(pad, buyY);
-  ctx.lineTo(width - pad, buyY);
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
 
 function nav(id) {
   document.querySelectorAll('.page').forEach((page) => {
@@ -434,7 +338,7 @@ function nav(id) {
     button.classList.toggle('active', button.dataset.page === id);
   });
   scrollTo({ top: 0, behavior: 'smooth' });
-  if (id === 'acsl') setTimeout(renderFeatured, 50);
+  
 }
 
 function installSmallStyles() {
@@ -446,16 +350,7 @@ function installSmallStyles() {
   document.head.appendChild(style);
 }
 
-function replaceLegacyLabels() {
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-  nodes.forEach((node) => {
-    node.nodeValue = node.nodeValue
-      .replaceAll('ACSL', 'FPS')
-      .replaceAll('日本株', '米国株');
-  });
-}
+
 
 document.addEventListener('click', (event) => {
   const id = event.target.dataset.page;
@@ -505,13 +400,7 @@ if (recalcButton) {
   };
 }
 
-const tradingViewButton = document.getElementById('openTradingView');
-if (tradingViewButton) {
-  tradingViewButton.onclick = () => {
-    const ticker = state.holdings.find((p) => p.code === 'FPS')?.code || state.holdings[0]?.code || 'FPS';
-    window.open(`https://www.tradingview.com/symbols/NASDAQ-${ticker}/`, '_blank');
-  };
-}
+
 
 function clock() {
   setText('clock', new Date().toLocaleTimeString('ja-JP', {
@@ -521,8 +410,7 @@ function clock() {
 }
 
 installSmallStyles();
-replaceLegacyLabels();
-window.addEventListener('resize', renderFeatured);
+
 render();
 clock();
 setInterval(clock, 30000);
