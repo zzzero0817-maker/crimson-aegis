@@ -124,6 +124,42 @@ async function refreshFRVOPrice() {
     console.error('FRVO price update failed:', error);
   }
 }
+async function refreshLYNXPrice() {
+  try {
+    const response = await fetch('/.netlify/functions/quote?symbol=LYNX');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    const lynx = state.holdings.find((p) => p.code === 'LYNX');
+
+    if (!lynx || !Number.isFinite(Number(data.price))) return;
+
+    lynx.price = Number(data.price);
+
+    if (Number.isFinite(Number(data.volume))) {
+      lynx.volume = Number(data.volume);
+    }
+
+    const previousClose = Number(data.previousClose);
+
+    if (Number.isFinite(previousClose)) {
+      lynx.history = [
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        Number(data.price)
+      ];
+    }
+
+    save();
+    render();
+  } catch (error) {
+    console.error('LYNX price update failed:', error);
+  }
+}
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -485,6 +521,7 @@ installSmallStyles();
 render();
 refreshFPSPrice();
 refreshFRVOPrice();
+refreshLYNXPrice();
 clock();
 setInterval(clock, 30000);
 
