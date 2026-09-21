@@ -52,7 +52,42 @@ const WATCH = [
 ];
 
 let state = load();
+async function refreshFPSPrice() {
+  try {
+    const response = await fetch('/.netlify/functions/quote?symbol=FPS');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
+    const data = await response.json();
+    const fps = state.holdings.find((p) => p.code === 'FPS');
+
+    if (!fps || !Number.isFinite(Number(data.price))) return;
+
+    fps.price = Number(data.price);
+
+    if (Number.isFinite(Number(data.volume))) {
+      fps.volume = Number(data.volume);
+    }
+
+    const previousClose = Number(data.previousClose);
+
+    if (Number.isFinite(previousClose)) {
+      fps.history = [
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        previousClose,
+        Number(data.price)
+      ];
+    }
+
+    save();
+    render();
+  } catch (error) {
+    console.error('FPS price update failed:', error);
+  }
+}
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -412,6 +447,7 @@ function clock() {
 installSmallStyles();
 
 render();
+refreshFPSPrice();
 clock();
 setInterval(clock, 30000);
 
